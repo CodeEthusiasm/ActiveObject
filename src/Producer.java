@@ -8,25 +8,30 @@ public class Producer extends Thread {
     private final Resource res;
     private final Proxy proxy;
     private final Random rand = new Random();
-    private final int amount;
+    private int amount;
     public Producer(Resource res, Proxy proxy, int id){
         this.id = id;
         this.res = res;
         this.proxy = proxy;
         this.amount = rand.nextInt(100)+1;
+        this.start();
     }
     @Override
     public void run(){
-        while(true){
+        long i=0;
+        int j=0;
+        while(Main.end){
             Future f = proxy.methodProduce(amount, id);
             while(!f.isAvailable()) {
+                //i++;
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            System.out.println("Wyprodukowane " + amount + ", producent: "+id + " Stan magazynu: "+ res.getEnd());
+            //System.out.println("Producer  "+id+ " has just produced " + amount+" buff = "+res.currentlyInBuff() +" i = "+i);
+            j++;
         }
     }
 }
