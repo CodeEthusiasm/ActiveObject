@@ -38,9 +38,6 @@ public class ActivationQueue {
         else
             return produceQueue.peek();
     }
-    public boolean isQueueEmpty(){
-        return activationQueue.isEmpty();
-    }
     public synchronized MethodRequestConsume consDequeue() throws InterruptedException {
         if(consumeQueue.isEmpty())
         {
