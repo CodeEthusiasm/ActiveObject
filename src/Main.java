@@ -6,7 +6,7 @@ public class Main {
     public static int overallConsumed=0;
     public static boolean end=true;
     public static void main (String [] args) throws InterruptedException {
-        int n=11000;
+        int n=100;
         final long startTime = System.currentTimeMillis();
         long endTime = System.currentTimeMillis();
         long time;
@@ -22,7 +22,7 @@ public class Main {
         do {
             endTime = System.currentTimeMillis();
             time=endTime-startTime;
-        }while (time<7000);
+        }while (time<500);
         end=false;
         for (int i = 0; i < n; i++){
             prod[i].join();

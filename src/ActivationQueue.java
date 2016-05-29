@@ -33,12 +33,39 @@ public class ActivationQueue {
             waited=true;
             this.wait();
         }
-        if(activationQueue.poll() instanceof MethodRequestConsume)
-            return consumeQueue.poll();
+        if(activationQueue.peek() instanceof MethodRequestConsume)
+            return consumeQueue.peek();
         else
-            return produceQueue.poll();
+            return produceQueue.peek();
     }
     public boolean isQueueEmpty(){
         return activationQueue.isEmpty();
+    }
+    public synchronized MethodRequestConsume consDequeue() throws InterruptedException {
+        if(consumeQueue.isEmpty())
+        {
+            waited=true;
+            this.wait();
+        }
+        MethodRequestConsume cons=consumeQueue.poll();
+        activationQueue.remove(cons);
+        return cons;
+    }
+    public synchronized MethodRequestProduce prodDequeue() throws InterruptedException {
+        if(produceQueue.isEmpty())
+        {
+            waited=true;
+            this.wait();
+        }
+        MethodRequestProduce prod=produceQueue.poll();
+        activationQueue.remove(prod);
+        return prod;
+    }
+    public synchronized void remove(MethodRequest mr){
+        if(mr instanceof MethodRequestConsume)
+            consumeQueue.remove(mr);
+        else
+            produceQueue.remove(mr);
+        activationQueue.remove(mr);
     }
 }

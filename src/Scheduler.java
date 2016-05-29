@@ -3,11 +3,9 @@
  */
 public class Scheduler extends Thread {
     private ActivationQueue aq;
-    private ActivationQueue expectant;
 
     public Scheduler() {
         aq = new ActivationQueue();
-        expectant=new ActivationQueue();
     }
 
     public void enqueue(MethodRequest mr) {
@@ -16,39 +14,31 @@ public class Scheduler extends Thread {
 
     @Override
     public void run(){
-        boolean locker=false;
-        while (Main.end) {
+        while (true) {
             MethodRequest mr = null;
-            if (expectant.isQueueEmpty()) {
-                try {
-                    mr = aq.dequeue();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                if (locker == true) {
-                    try {
-                        mr = aq.dequeue();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    locker = false;
-                } else {
-                    try {
-                        mr = expectant.dequeue();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+            try {
+                mr = aq.dequeue();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-
-
-            if (mr != null) {
-                if (mr.guard())
+            if(mr!=null) {
+                if (mr.guard()) {
+                    aq.remove(mr);
                     mr.execute();
-                else {
-                    expectant.enqueue(mr);
-                    locker = true;
+                } else {
+                    if (mr instanceof MethodRequestConsume) {
+                        try {
+                            aq.prodDequeue().execute();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        try {
+                            aq.consDequeue().execute();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         }
