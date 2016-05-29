@@ -6,7 +6,7 @@ public class Main {
     public static int overallConsumed=0;
     public static boolean end=true;
     public static void main (String [] args) throws InterruptedException {
-        int n=100;
+        int n=1000;
         final long startTime = System.currentTimeMillis();
         long endTime = System.currentTimeMillis();
         long time;
@@ -24,11 +24,11 @@ public class Main {
             time=endTime-startTime;
         }while (time<500);
         end=false;
+        scheduler.join();
         for (int i = 0; i < n; i++){
             prod[i].join();
             cons[i].join();
         }
-        scheduler.join();
         System.out.println(overallConsumed+" "+overallPoduced);
     }
 }

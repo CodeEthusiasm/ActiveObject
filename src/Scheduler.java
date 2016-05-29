@@ -14,7 +14,7 @@ public class Scheduler extends Thread {
 
     @Override
     public void run(){
-        while (true) {
+        while (Main.end) {
             MethodRequest mr = null;
             try {
                 mr = aq.dequeue();
@@ -28,17 +28,19 @@ public class Scheduler extends Thread {
                 } else {
                     if (mr instanceof MethodRequestConsume) {
                         try {
-                            aq.prodDequeue().execute();
+                            mr= aq.prodDequeue();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     } else {
                         try {
-                            aq.consDequeue().execute();
+                            mr=aq.consDequeue();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
+                    if(mr!=null)
+                        mr.execute();
                 }
             }
         }
